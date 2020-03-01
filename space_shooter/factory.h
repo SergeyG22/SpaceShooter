@@ -39,3 +39,14 @@ public:
 	virtual void draw(sf::RenderTarget&, sf::RenderStates)const;
 	bullet(starship&);
 };
+
+class asteroid:public sf::Drawable
+{
+	sf::Texture texture_stone;
+	sf::Sprite sprite_stone;
+	float frame;
+public:
+	virtual void draw(sf::RenderTarget&, sf::RenderStates)const;
+	void update(float&);
+	asteroid();
+};

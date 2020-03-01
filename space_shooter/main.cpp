@@ -7,10 +7,12 @@
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(720, 1520), "space shooter");
-	fone_space stars;
-	
+
+	fone_space stars;	
 	starship galactic;
 	bullet bullet_v1(galactic);
+	asteroid stone;
+
 	sf::Clock clock;
 		
 	std::list<std::shared_ptr<bullet>>guns;
@@ -81,8 +83,9 @@ int main()
 				stars.sprite_space_second.setPosition(0,-1519);
 			}
 
-
-		window.draw(galactic);		
+		stone.update(time);
+		window.draw(galactic);
+		window.draw(stone);
 		window.display();
 
 	}

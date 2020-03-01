@@ -134,3 +134,26 @@ void bullet::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	target.draw(sprite_bullet);
 }
 
+asteroid::asteroid() :frame(0)
+{
+	if (!texture_stone.loadFromFile("asteroid.png"))
+	{
+		std::cout << "texture loading error\n";
+	}
+	sprite_stone.setTexture(texture_stone);
+	sprite_stone.setTextureRect(sf::IntRect(0,0,200,200));
+	sprite_stone.setScale(0.5,0.5);
+	sprite_stone.setPosition(300,800);
+}
+
+void asteroid::draw(sf::RenderTarget& target, sf::RenderStates states)const
+{
+	target.draw(sprite_stone);
+}
+
+void asteroid::update(float& time)
+{
+	frame += 0.009 * time;
+	if (frame > 20) { frame -= 20; }
+	sprite_stone.setTextureRect(sf::IntRect(200 * int(frame), 0,200, 200));
+}
