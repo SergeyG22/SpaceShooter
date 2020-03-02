@@ -1,8 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
-#include "factory.h"
+#include <chrono>
+#include <random>
 #include <list>
+#include "factory.h"
+
+
+double random_number_generator(double, double);
+
+
 
 int main()
 {
@@ -11,86 +18,94 @@ int main()
 	fone_space stars;	
 	starship galactic;
 	bullet bullet_v1(galactic);
-	asteroid stone;
-
-	sf::Clock clock;
-		
-	std::list<std::shared_ptr<bullet>>guns;
-	auto it = guns.begin();
+	asteroid stone_version1;
+	sf::Clock clock1;
+	sf::Clock clock2;
+	int the_time_between = (int)random_number_generator(5.0, 10.0);
+	stone_version1.asteroid_field.push_back(std::shared_ptr<asteroid>(new asteroid(random_number_generator(100,620.0), 50, (float)random_number_generator(0.009, 0.03))));
 	
+	
+
 
 	while (window.isOpen())
 	{
 		sf::Event event;
-		float time = clock.getElapsedTime().asMicroseconds();
-		clock.restart();
-		time = time / 800;
+		float time1 = clock1.getElapsedTime().asMicroseconds();
+		float time2 = clock2.getElapsedTime().asSeconds();
+		
+		time1 = time1 / 800;
+		clock1.restart();
+		
+
 
 		while (window.pollEvent(event))
-		{
-			sf::Vector2i PixelPosition = sf::Touch::getPosition(1, window);
-			sf::Vector2f pos = window.mapPixelToCoords(PixelPosition);
-			
+		{			
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
 			}
-
-			if (event.type == sf::Event::KeyPressed)
-					{
-						if (event.key.code == sf::Keyboard::Space)
-						{					
-							guns.push_back(std::shared_ptr<bullet>(new bullet(galactic)));
-							galactic.sound_laser.play();
-						}
-					}
-			if (event.type == sf::Event::TouchBegan)
-		           	{
-				         if (galactic.sprite_sh.getGlobalBounds().contains(pos.x, pos.y))
-				         {
-				           	guns.push_back(std::shared_ptr<bullet>(new bullet(galactic)));
-				         }
-		        	}
-			
-		     	galactic.mouse_event(window,event);
-				galactic.touch_event(window,event);								
+		     	galactic.mouse_event(window,event,galactic);
+				galactic.touch_event(window,event,galactic);								
 		}
 		window.clear();
 		window.draw(stars);
-		for (it = guns.begin(); it != guns.end();) 
+		for (galactic.it = galactic.guns.begin(); galactic.it != galactic.guns.end();) 
 		    {			
-				window.draw((*it)->sprite_bullet);
-				(*it)->sprite_bullet.move(sf::Vector2f(0, -1.5*time));
-				if ((*it)->sprite_bullet.getPosition().y < 0)         //1
+				window.draw((*galactic.it)->sprite_bullet);
+				(*galactic.it)->sprite_bullet.move(sf::Vector2f(0, -1.5*time1));
+				if ((*galactic.it)->sprite_bullet.getPosition().y < 0)         
 				{					
-					it = guns.erase(it);                              //2
+					galactic.it = galactic.guns.erase(galactic.it);                              
 				}
 				else
 				{
-					it++;                                             //3
+					galactic.it++;                                             
 				}
 			}
-	
-			stars.sprite_space_first.move(sf::Vector2f(0, 0.05 * time));
-			stars.sprite_space_second.move(sf::Vector2f(0, 0.05 * time));
-			if (stars.sprite_space_first.getPosition().y > 1519)
-			{
-				stars.sprite_space_first.setPosition(0,-1519);
-			}
 
-			if (stars.sprite_space_second.getPosition().y > 1519)
+		if ((int)time2 == the_time_between )
+		{
+			for (int i = 0; i < (int)random_number_generator(1,4);++i)
 			{
-				stars.sprite_space_second.setPosition(0,-1519);
+			//	std::cout <<"i=: " << i << '\n';
+				stone_version1.asteroid_field.push_back(std::shared_ptr<asteroid>(new asteroid(random_number_generator(100, 620.0), 50, (float)random_number_generator(0.009, 0.03))));
 			}
+			the_time_between = (int)random_number_generator(5.0, 10.0);
+			clock2.restart();
+		}
 
-		stone.update(time);
+
+		for (stone_version1.iterator = stone_version1.asteroid_field.begin(); stone_version1.iterator != stone_version1.asteroid_field.end();)
+		{
+			window.draw((*stone_version1.iterator)->sprite_stone);
+			(*stone_version1.iterator)->update(time1);
+			(*stone_version1.iterator)->sprite_stone.move(sf::Vector2f(0, random_number_generator(0.01, 0.05)* time1));			
+			if ((*stone_version1.iterator)->sprite_stone.getPosition().y > 1520)
+			{
+				stone_version1.iterator = stone_version1.asteroid_field.erase(stone_version1.iterator);
+				stone_version1.asteroid_field.push_back(std::shared_ptr<asteroid>(new asteroid(random_number_generator(100, 620.0), 50, (float)random_number_generator(0.009, 0.03))));
+			}
+			else
+			{
+				stone_version1.iterator++;
+			}
+		}
+
+		stars.update(time1);
 		window.draw(galactic);
-		window.draw(stone);
 		window.display();
 
 	}
 
 	return 0;
+}
+
+double random_number_generator(double a,double b)
+{
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<double>dist(a, b);
+	return dist(mt);
 }
 
 
@@ -102,14 +117,3 @@ int main()
 
 
 
-
-
-
-//=====================
-//	std::list<bullet>guns;
-//	std::list<bullet>::iterator it = guns.begin();
-//	std::list<bullet*>guns;
-//	std::list<bullet*>::iterator it = guns.begin();
-//=====================
-//	guns.push_back(bullet(galactic));
-//	guns.push_back(new bullet(galactic));	

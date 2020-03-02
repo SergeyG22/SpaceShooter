@@ -25,7 +25,7 @@ void starship::draw(sf::RenderTarget& target,sf::RenderStates states)const
 	target.draw(sprite_sh);
 }
 
-void starship::mouse_event(sf::RenderWindow& w,sf::Event& e)
+void starship::mouse_event(sf::RenderWindow& w,sf::Event& e,starship& galactic)
 {
 	sf::Vector2i PixelPosition = sf::Mouse::getPosition(w);
 	sf::Vector2f pos = w.mapPixelToCoords(PixelPosition);
@@ -58,12 +58,21 @@ void starship::mouse_event(sf::RenderWindow& w,sf::Event& e)
 				sprite_sh.setPosition(pos.x - dX, y);
 			}
 		}
+
+		if (e.type == sf::Event::KeyPressed)
+		{
+			if (e.key.code == sf::Keyboard::Space)
+			{
+				guns.push_back(std::shared_ptr<bullet>(new bullet(galactic)));
+				galactic.sound_laser.play();
+			}
+		}
 }
 
-void starship::touch_event(sf::RenderWindow& w, sf::Event& e)
+void starship::touch_event(sf::RenderWindow& w, sf::Event& e,starship& galactic)
 {
 	
-	sf::Vector2i PixelPosition = sf::Touch::getPosition(1,w);
+	sf::Vector2i PixelPosition = sf::Touch::getPosition(0,w);
 	sf::Vector2f pos = w.mapPixelToCoords(PixelPosition);
 	
 	if (e.type == sf::Event::TouchBegan)
@@ -89,6 +98,15 @@ void starship::touch_event(sf::RenderWindow& w, sf::Event& e)
 		}
 	}
 
+	if (e.type == sf::Event::TouchBegan)
+					{
+						 if (galactic.sprite_sh.getGlobalBounds().contains(pos.x, pos.y))
+						 {
+							guns.push_back(std::shared_ptr<bullet>(new bullet(galactic)));
+							galactic.sound_laser.play();
+						 }
+					}
+			
 }
 
 
@@ -118,6 +136,22 @@ void fone_space::draw(sf::RenderTarget& target,sf::RenderStates states)const
 	target.draw(sprite_space_second);
 }
 
+void fone_space::update(float& t)
+{
+	sprite_space_first.move(sf::Vector2f(0, 0.05 * t));
+	sprite_space_second.move(sf::Vector2f(0, 0.05 * t));
+	if (sprite_space_first.getPosition().y > 1519)
+	{
+		sprite_space_first.setPosition(0, -1519);
+	}
+
+	if (sprite_space_second.getPosition().y > 1519)
+	{
+		sprite_space_second.setPosition(0, -1519);
+	}
+
+}
+
 bullet::bullet(starship& a):p(nullptr)
 {
 	if (!texture_bullet.loadFromFile("bullet.png"))
@@ -134,16 +168,48 @@ void bullet::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	target.draw(sprite_bullet);
 }
 
-asteroid::asteroid() :frame(0)
+asteroid::asteroid(float x_position,float y_position,float r) :frame(0),x(x_position),y(y_position),rotate(r)
 {
-	if (!texture_stone.loadFromFile("asteroid.png"))
+
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<double>dist(0,3);
+	std::uniform_real_distribution<double>dist_(0.5, 0.9);
+
+	switch ((int)dist(mt))
 	{
-		std::cout << "texture loading error\n";
+	case 0: 
+	{	
+		if (!texture_stone.loadFromFile("asteroid_version_1a.png"))
+	    {
+		   std::cout << "texture loading error\n";
+	    }
+		break;
 	}
+	case 1:
+	{   
+		if (!texture_stone.loadFromFile("asteroid_version_1b.png"))
+		{
+			std::cout << "texture loading error\n";
+		}
+		break;
+	}
+
+	case 2:
+	{
+		if (!texture_stone.loadFromFile("asteroid_version_1c.png"))
+		{
+			std::cout << "texture loading error\n";
+		}
+		break;
+	}
+
+	}
+
+	float size = float(dist_(mt));
+	sprite_stone.setScale(size, size);
 	sprite_stone.setTexture(texture_stone);
-	sprite_stone.setTextureRect(sf::IntRect(0,0,200,200));
-	sprite_stone.setScale(0.5,0.5);
-	sprite_stone.setPosition(300,800);
+	sprite_stone.setTextureRect(sf::IntRect(0,0,100,100));
+	sprite_stone.setPosition(x,y);
 }
 
 void asteroid::draw(sf::RenderTarget& target, sf::RenderStates states)const
@@ -153,7 +219,7 @@ void asteroid::draw(sf::RenderTarget& target, sf::RenderStates states)const
 
 void asteroid::update(float& time)
 {
-	frame += 0.009 * time;
+	frame += rotate * time;            // rotate 0.009 ג טהואכו
 	if (frame > 20) { frame -= 20; }
-	sprite_stone.setTextureRect(sf::IntRect(200 * int(frame), 0,200, 200));
+	sprite_stone.setTextureRect(sf::IntRect(100 * int(frame), 0,100, 100));
 }
