@@ -55,9 +55,10 @@ int main()
 				{
 					if ((*galactic.it)->sprite_bullet.getGlobalBounds().intersects((*stone_version1.iterator)->sprite_stone.getGlobalBounds()))
 					{
+					    (*galactic.it)->bullet_visibility = true;
 						explosion.list_e.push_back(std::shared_ptr<explosions>(new explosions((*stone_version1.iterator)->sprite_stone.getPosition().x,(*stone_version1.iterator)->sprite_stone.getPosition().y)));	
 						stone_version1.iterator = stone_version1.asteroid_field.erase(stone_version1.iterator);
-						std::cout<< "size = "<< explosion.list_e.size()<<'\n';
+						
 					}
 					else
 					{					     	
@@ -79,7 +80,7 @@ int main()
 
 		if ((int)time2 == the_time_between )
 		{
-			for (int i = 0; i < (int)random_number_generator(1,4);++i)
+			for (int i = 0; i < (int)random_number_generator(1,8);++i)
 			{				
 				stone_version1.asteroid_field.push_back(std::shared_ptr<asteroid>(new asteroid(random_number_generator(100, 620.0), 50, (float)random_number_generator(0.009, 0.03))));
 			}
@@ -133,7 +134,18 @@ int main()
 			}
 		}
 
-		
+		for (galactic.it = galactic.guns.begin(); galactic.it != galactic.guns.end();)
+		{
+			if ((*galactic.it)->bullet_visibility)
+			{
+				galactic.it = galactic.guns.erase(galactic.it);
+			}
+			else
+			{
+				galactic.it++;
+			}
+
+		}
 
 
 		stars.update(time1);		

@@ -45,6 +45,7 @@ class bullet :public sf::Drawable
 	starship* p;
 public:
 	sf::Sprite sprite_bullet;
+	bool bullet_visibility = false;
 	virtual void draw(sf::RenderTarget&, sf::RenderStates)const;
 	bullet(starship&);
 };
