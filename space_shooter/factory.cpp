@@ -77,7 +77,7 @@ void starship::touch_event(sf::RenderWindow& w, sf::Event& e,starship& galactic)
 	
 	if (e.type == sf::Event::TouchBegan)
 	{
-		   
+		  
 			if (sprite_sh.getGlobalBounds().contains(pos.x, pos.y))
 			{				
 				dX = pos.x - sprite_sh.getPosition().x;
@@ -172,40 +172,41 @@ asteroid::asteroid(float x_position,float y_position,float r) :frame(0),x(x_posi
 {
 
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<double>dist(0,3);
-	std::uniform_real_distribution<double>dist_(0.5, 0.9);
-
-	switch ((int)dist(mt))
+	std::uniform_real_distribution<double>distA(0,5);          // текстура обьекта
+	std::uniform_real_distribution<double>distB(0.5, 0.9);    // размер обьекта
+	std::uniform_real_distribution<double>distC(0.05, 0.1);   // скорость обьекта
+	std::uniform_real_distribution<double>distE(-0.2, 0.2);   // угол направления движения
+	speed = float(distC(mt));
+	angle_of_movement = distE(mt);
+	
+	switch ((int)distA(mt))
 	{
 	case 0: 
 	{	
-		if (!texture_stone.loadFromFile("asteroid_version_1a.png"))
-	    {
-		   std::cout << "texture loading error\n";
-	    }
+		if (!texture_stone.loadFromFile("asteroid_version_1a.png")) { std::cout << "texture loading error\n"; }
 		break;
 	}
 	case 1:
 	{   
-		if (!texture_stone.loadFromFile("asteroid_version_1b.png"))
-		{
-			std::cout << "texture loading error\n";
-		}
+		if (!texture_stone.loadFromFile("asteroid_version_1b.png")) { std::cout << "texture loading error\n"; }
 		break;
 	}
-
 	case 2:
-	{
-		if (!texture_stone.loadFromFile("asteroid_version_1c.png"))
-		{
-			std::cout << "texture loading error\n";
-		}
+	{   if (!texture_stone.loadFromFile("asteroid_version_1c.png")) {  std::cout << "texture loading error\n"; }
 		break;
 	}
-
+	case 3:
+	{   if (!texture_stone.loadFromFile("asteroid_version_2a.png")) { std::cout << "texture loading error\n"; }
+	break;
+	}
+	case 4:
+	{   if (!texture_stone.loadFromFile("asteroid_version_2b.png")) { std::cout << "texture loading error\n"; }
+	break;
 	}
 
-	float size = float(dist_(mt));
+
+	}
+	float size = float(distB(mt));
 	sprite_stone.setScale(size, size);
 	sprite_stone.setTexture(texture_stone);
 	sprite_stone.setTextureRect(sf::IntRect(0,0,100,100));
@@ -219,7 +220,39 @@ void asteroid::draw(sf::RenderTarget& target, sf::RenderStates states)const
 
 void asteroid::update(float& time)
 {
-	frame += rotate * time;            // rotate 0.009 в идеале
+	frame += rotate * time;                         // rotate 0.009 в идеале
 	if (frame > 20) { frame -= 20; }
 	sprite_stone.setTextureRect(sf::IntRect(100 * int(frame), 0,100, 100));
+}
+
+explosions::explosions(float a,float b):frame(0)
+{
+	
+	if (!explosions_t.loadFromFile("type_A.png")) 
+	{ 
+		std::cout << "texture loading error\n";
+	}
+	explosions_s.setTexture(explosions_t);
+	explosions_s.setTextureRect(sf::IntRect(0, 0, 51, 50));
+	explosions_s.setPosition(a, b);
+}
+
+bool explosions::update(float& t,bool& selector)
+{
+	if (selector)
+	{
+		frame += 0.01 * t;
+		if (frame > 20) { frame -= 20;
+		selector = false;
+		}
+		explosions_s.setTextureRect(sf::IntRect(50 * int(frame), 0, 51, 50));
+	}
+	return selector;
+}
+
+
+
+void explosions::draw(sf::RenderTarget& target, sf::RenderStates states)const
+{
+	target.draw(explosions_s);
 }
