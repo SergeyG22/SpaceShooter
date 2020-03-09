@@ -1,6 +1,17 @@
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4838 )
+
 #include "factory.h"
 #include <iostream>
 #include <SFML/Audio.hpp>
+#include "1a.hpp"
+#include "1b.hpp"
+#include "1c.hpp"
+#include "2a.hpp"
+#include "2b.hpp"
+#include "typeA.hpp"
+#include "typeB.hpp"
+#include "typeC.hpp"
 
 starship::starship():x(300), y(1000),move(false),dX(0.0)
 {
@@ -168,6 +179,9 @@ void bullet::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	target.draw(sprite_bullet);
 }
 
+
+
+
 asteroid::asteroid(float x_position,float y_position,float r) :frame(0),x(x_position),y(y_position),rotate(r)
 {
 
@@ -178,30 +192,34 @@ asteroid::asteroid(float x_position,float y_position,float r) :frame(0),x(x_posi
 	std::uniform_real_distribution<double>distE(-0.2, 0.2);   // угол направления движения
 	speed = float(distC(mt));
 	angle_of_movement = distE(mt);
-	
 	switch ((int)distA(mt))
 	{
 	case 0: 
 	{	
-		if (!texture_stone.loadFromFile("asteroid_version_1a.png")) { std::cout << "texture loading error\n"; }
+	
+		texture_stone.loadFromMemory(asteroid_1a,sizeof(asteroid_1a));
 		break;
 	}
 	case 1:
 	{   
-		if (!texture_stone.loadFromFile("asteroid_version_1b.png")) { std::cout << "texture loading error\n"; }
+	
+		texture_stone.loadFromMemory(asteroid_1b, sizeof(asteroid_1b));
 		break;
 	}
 	case 2:
-	{   if (!texture_stone.loadFromFile("asteroid_version_1c.png")) {  std::cout << "texture loading error\n"; }
+	{ 
+		texture_stone.loadFromMemory(asteroid_1c, sizeof(asteroid_1c));
 		break;
 	}
 	case 3:
-	{   if (!texture_stone.loadFromFile("asteroid_version_2a.png")) { std::cout << "texture loading error\n"; }
-	break;
+	{ 
+		texture_stone.loadFromMemory(asteroid_2a, sizeof(asteroid_2a));
+		break;
 	}
 	case 4:
-	{   if (!texture_stone.loadFromFile("asteroid_version_2b.png")) { std::cout << "texture loading error\n"; }
-	break;
+	{ 
+		texture_stone.loadFromMemory(asteroid_2b, sizeof(asteroid_2b));
+		break;
 	}
 
 
@@ -209,7 +227,6 @@ asteroid::asteroid(float x_position,float y_position,float r) :frame(0),x(x_posi
 	float size = float(distB(mt));
 	sprite_stone.setScale(size, size);
 	sprite_stone.setTexture(texture_stone);
-	sprite_stone.setTextureRect(sf::IntRect(0,0,100,100));
 	sprite_stone.setPosition(x,y);
 }
 
@@ -225,27 +242,80 @@ void asteroid::update(float& time)
 	sprite_stone.setTextureRect(sf::IntRect(100 * int(frame), 0,100, 100));
 }
 
-explosions::explosions(float a,float b):frame(0)
+explosions::explosions(float a,float b):frame(0),type(1)
 {
-	
-	if (!explosions_t.loadFromFile("type_A.png")) 
-	{ 
-		std::cout << "texture loading error\n";
+	switch (type)
+	{
+	case 1:
+	{
+		explosions_t.loadFromMemory(typeA_, sizeof(typeA_));
+		explosions_s.setTexture(explosions_t);
+		explosions_s.setPosition(a, b);
+		break;
 	}
-	explosions_s.setTexture(explosions_t);
-	explosions_s.setTextureRect(sf::IntRect(0, 0, 51, 50));
-	explosions_s.setPosition(a, b);
+	case 2:
+	{
+		explosions_t.loadFromMemory(typeB_, sizeof(typeB_));
+		explosions_s.setTexture(explosions_t);
+		explosions_s.setPosition(a-96, b-96);
+		break;
+	}
+	case 3:
+	{
+		explosions_t.loadFromMemory(typeC_, sizeof(typeC_));
+		explosions_s.setTexture(explosions_t);
+		explosions_s.setPosition(a-60, b-60);
+		break;
+	}
+
+	}
+
 }
 
 bool explosions::update(float& t,bool& selector)
 {
-	if (selector)
+	switch (type)
+	{
+	case 1:
+	{
+		if (selector)
 	{
 		frame += 0.01 * t;
-		if (frame > 20) { frame -= 20;
-		selector = false;
+		if (frame > 20) {
+			frame -= 20;
+			selector = false;
 		}
 		explosions_s.setTextureRect(sf::IntRect(50 * int(frame), 0, 51, 50));
+	}
+	break;
+	}
+	case 2:
+	{
+		if (selector)
+		{
+			frame += 0.01* t;
+			if (frame > 64) {
+				frame -= 64;
+				selector = false;
+			}
+			explosions_s.setTextureRect(sf::IntRect(192 * int(frame), 0, 192, 192));
+		}
+		break;
+	}
+	case 3:
+	{
+		if (selector)
+		{
+			frame += 0.01 * t;
+			if (frame > 48) {
+				frame -= 48;
+				selector = false;
+			}
+			explosions_s.setTextureRect(sf::IntRect(256 * int(frame), 0, 256, 256));
+		}
+		break;
+	}
+
 	}
 	return selector;
 }

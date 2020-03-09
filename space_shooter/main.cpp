@@ -7,6 +7,7 @@
 #include "factory.h"
 
 
+
 double random_number_generator(double, double);
 
 
@@ -22,6 +23,7 @@ int main()
 	explosions explosion;
 	sf::Clock clock1;
 	sf::Clock clock2;
+
 	int the_time_between = (int)random_number_generator(5.0, 10.0);
 	
 	while (window.isOpen())
@@ -76,19 +78,17 @@ int main()
 					galactic.it++;                                             
 				}
 			}
-		
-
+	
 		if ((int)time2 == the_time_between )
 		{
-			for (int i = 0; i < (int)random_number_generator(1,8);++i)
+			for (int i = 0; i < (int)random_number_generator(1,10);++i)
 			{				
 				stone_version1.asteroid_field.push_back(std::shared_ptr<asteroid>(new asteroid(random_number_generator(100, 620.0), 50, (float)random_number_generator(0.009, 0.03))));
 			}
-			the_time_between = (int)random_number_generator(5.0, 10.0);
+			the_time_between = (int)random_number_generator(1.0, 3.0);
 			clock2.restart();
 		}
-
-
+			
 		for (stone_version1.iterator = stone_version1.asteroid_field.begin(); stone_version1.iterator != stone_version1.asteroid_field.end();)
 		{
 			window.draw((*stone_version1.iterator)->sprite_stone);
@@ -115,7 +115,7 @@ int main()
 				stone_version1.iterator++;
 			}
 		}
-
+		
 		for (explosion.it_explosions = explosion.list_e.begin(); explosion.it_explosions != explosion.list_e.end();)
 		{
 			if ((*explosion.it_explosions)->selector)   
@@ -133,7 +133,8 @@ int main()
 				explosion.it_explosions++;
 			}
 		}
-
+		
+		
 		for (galactic.it = galactic.guns.begin(); galactic.it != galactic.guns.end();)
 		{
 			if ((*galactic.it)->bullet_visibility)

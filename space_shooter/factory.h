@@ -57,23 +57,24 @@ class asteroid:public sf::Drawable
 	float rotate;                                //speed of rotate	
 	float x;
 	float y;
-	std::random_device rd;	
+	std::random_device rd;
 public:
 	std::list<std::shared_ptr<asteroid>>asteroid_field;
-	std::list<std::shared_ptr<asteroid>>::iterator iterator = asteroid_field.begin();
+	std::list<std::shared_ptr<asteroid>>::iterator iterator = asteroid_field.begin();	
 	virtual void draw(sf::RenderTarget&, sf::RenderStates)const;
 	sf::Sprite sprite_stone;
 	float speed;
 	double angle_of_movement;
 	void update(float&);
 	asteroid(float,float,float);
-	asteroid() :x(300), y(800), frame(0), rotate(0.009) { };
+	asteroid() :x(300), y(800), frame(0), rotate(0.009),speed(0.0),angle_of_movement(0.0) { };
 };
 
 class explosions:public sf::Drawable
 {
 	sf::Texture explosions_t;	
-	asteroid* p;	
+	asteroid* p;
+	int type;
 public:
 	std::list<std::shared_ptr<explosions>>list_e;
 	std::list<std::shared_ptr<explosions>>::iterator it_explosions;
