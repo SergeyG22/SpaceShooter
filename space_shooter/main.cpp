@@ -32,7 +32,7 @@ int main()
 		float time1 = clock1.getElapsedTime().asMicroseconds();
 		float time2 = clock2.getElapsedTime().asSeconds();
 		
-		time1 = time1 / 800;
+		time1 = time1 / 400;
 		clock1.restart();
 		
 		while (window.pollEvent(event))
@@ -43,6 +43,8 @@ int main()
 			}
 		     	galactic.mouse_event(window,event,galactic);
 				galactic.touch_event(window,event,galactic);
+
+							
 		}
 		window.clear();
 		window.draw(stars); 
@@ -79,16 +81,17 @@ int main()
 				}
 			}
 	
+		
 		if ((int)time2 == the_time_between )
 		{
-			for (int i = 0; i < (int)random_number_generator(1,10);++i)
+			for (int i = 0; i < (int)random_number_generator(1,5);++i)
 			{				
 				stone_version1.asteroid_field.push_back(std::shared_ptr<asteroid>(new asteroid(random_number_generator(100, 620.0), 50, (float)random_number_generator(0.009, 0.03))));
 			}
 			the_time_between = (int)random_number_generator(1.0, 3.0);
 			clock2.restart();
-		}
-			
+		}			
+		
 		for (stone_version1.iterator = stone_version1.asteroid_field.begin(); stone_version1.iterator != stone_version1.asteroid_field.end();)
 		{
 			window.draw((*stone_version1.iterator)->sprite_stone);
